@@ -1,2 +1,2 @@
 # CI-CD-for-ml-
-Learning how to set up a ci/cd pipeline
+Implementing basic CI/CD pipeline for ML models
