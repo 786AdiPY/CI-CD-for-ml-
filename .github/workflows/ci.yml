@@ -16,6 +16,12 @@ jobs:
       - uses: actions/checkout@v3
       - uses: iterative/setup-cml@v2
       
+      # Adds git user config for CML to commit
+      - name: Configure git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -38,14 +44,14 @@ jobs:
         run: |
           python -m pip install --upgrade pip setuptools wheel
 
-      # --- THIS IS THE FIX for c_metadata ---
+      # This step contains all the fixes for the pandas build error
       - name: Install Packages
         run: |
-          # 1. Install numpy FIRST, pinned to < 2.0
-          pip install "numpy<2.0"
+          # 1. Install numpy<2.0 AND the build tools (mesonpy) first
+          pip install "numpy<2.0" mesonpy ninja
           
-          # 2. Install the rest, forcing pip to use the numpy
-          #    we just installed and NOT build in an isolated bubble.
+          # 2. Install the rest, using --no-build-isolation to force
+          #    pip to use the packages we just installed.
           pip install --no-build-isolation -r requirements.txt
 
       - name: Format
