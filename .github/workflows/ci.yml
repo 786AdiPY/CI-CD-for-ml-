@@ -26,8 +26,7 @@ jobs:
         with:
           python-version: '3.12'
 
-      # --- CACHE FIX ---
-      # I added '-v2' to the key to force a cache refresh.
+      # I am keeping the v2 cache key to be safe
       - name: Cache pip dependencies
         uses: actions/cache@v3
         with:
@@ -36,23 +35,22 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
 
-      # --- NINJA FIX ---
-      # I added 'ninja-build' to the apt-get install
       - name: Install system build dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential python3-dev cargo ninja-build
       
-      - name: Upgrade pip, setuptools, and wheel
+      # --- NEW FIX HERE ---
+      # Install 'mesonpy' here, along with pip upgrades.
+      - name: Upgrade pip and install build tools
         run: |
-          python -m pip install --upgrade pip setuptools wheel
-
-      # --- FINAL INSTALL STEP ---
-      # I removed 'ninja' from this pip command, as it's now installed by apt-get
+          python -m pip install --upgrade pip setuptools wheel mesonpy
+      
+      # --- CLEANED UP INSTALL STEP ---
       - name: Install Packages
         run: |
-          # 1. Install numpy<2.0 AND the build tool (mesonpy) first
-          pip install "numpy<2.0" mesonpy
+          # 1. Install numpy<2.0
+          pip install "numpy<2.0"
           
           # 2. Install the rest of your requirements
           pip install --no-build-isolation -r requirements.txt
