@@ -1,0 +1,6 @@
+pandas
+scikit-learn
+skops[hf-hub]
+matplotlib
+black
+cml
