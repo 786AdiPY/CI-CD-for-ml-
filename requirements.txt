@@ -1,6 +1,7 @@
 pandas
 scikit-learn
-skops[hf-hub]
+skops
 matplotlib
 black
 cml
+
