@@ -8,6 +8,7 @@ from sklearn.preprocessing import OrdinalEncoder, StandardScaler
 from sklearn.metrics import accuracy_score, f1_score
 import matplotlib.pyplot as plt
 from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix
+import skops.io as sio
 
 drug_df = pd.read_csv("Data/drug200.csv")
 drug_df = drug_df.sample(frac=1)
@@ -52,5 +53,13 @@ cm = confusion_matrix(y_test, predictions, labels=pipe.classes_)
 disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=pipe.classes_)
 disp.plot()
 plt.savefig("Results/model_results.png", dpi=120)
+
+
+
+print("Saving model...")
+# This saves your 'pipe' object to a file in the 'Model' folder
+sio.dump(pipe, "Model/drug_pipeline.skops")
+
+print("Model saved to 'Model/drug_pipeline.skops'")
 
 
