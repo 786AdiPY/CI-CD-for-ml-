@@ -41,14 +41,15 @@ jobs:
         run: |
           python -m pip install --upgrade pip setuptools wheel
 
-      # --- OUR PROVEN FIX ---
+      # --- OUR PROVEN FIX (NOW WITH --no-build-isolation) ---
       - name: Install Packages
         run: |
           # 1. Install numpy FIRST, pinned to < 2.0
           pip install "numpy<2.0"
           
-          # 2. Install the rest of your requirements
-          pip install -r requirements.txt
+          # 2. Install the rest, but force pip to use the numpy
+          #    we just installed instead of building in an isolated bubble
+          pip install --no-build-isolation -r requirements.txt
 
       - name: Format
         run: make format
