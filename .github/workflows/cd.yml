@@ -13,18 +13,20 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      # --- ADD THESE STEPS HERE ---
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.12' # Or your project's python version
+          python-version: '3.12'
 
       - name: Install Hugging Face Hub
         run: pip install huggingface_hub
 
-      # --- YOUR ORIGINAL STEP IS BELOW ---
+      # --- THIS IS THE FIX for 'hf-login' not found ---
+      - name: Add pip install location to PATH
+        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
+
       - name: Deployment To Hugging Face
         env:
           HF: ${{ secrets.HF }}
-        # I also fixed a small typo here: $HFs -> $HF
+        # Fixed the $HFs typo here too
         run: make deploy HF=$HF
