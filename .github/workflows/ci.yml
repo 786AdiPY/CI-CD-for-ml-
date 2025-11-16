@@ -1,63 +1,30 @@
 name: Continuous Integration
-
 on:
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
   workflow_dispatch:
-
+  
 permissions: write-all
-
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: iterative/setup-cml@v2
-      
-      # --- NEW STEP: Setup Python ---
-      # (This is needed for the caching action)
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.12' # Or your project's python version
-
-      # --- NEW STEP: Cache pip dependencies ---
-      - name: Cache pip dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-
-      - name: Install system build dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential python3-dev cargo
-      
-      - name: Upgrade pip, setuptools, and wheel
-        run: |
-          python -m pip install --upgrade pip setuptools wheel
-
-      # --- OUR PROVEN FIX (NOW WITH --no-build-isolation) ---
       - name: Install Packages
-        run: |
-          # 1. Install numpy FIRST, pinned to < 2.0
-          pip install "numpy<2.0"
-          
-          # 2. Install the rest, but force pip to use the numpy
-          #    we just installed instead of building in an isolated bubble
-          pip install --no-build-isolation -r requirements.txt
-
+        run: make install
       - name: Format
         run: make format
-
       - name: Train
         run: make train
-
       - name: Evaluation
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: make eval
+      - name: Update Branch
+        env:
+          NAME: ${{ secrets.ADI }}
+          EMAIL: ${{ secrets.ADI_MAIL }}
+        run: make update-branch USER_NAME=$NAME USER_EMAIL=$EMAIL
