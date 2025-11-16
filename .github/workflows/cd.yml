@@ -1,39 +1,19 @@
 name: Continuous Deployment
-
-# This 'on' key controls when the deployment runs
 on:
-  # 1. Run when a 'push' happens to the 'main' branch
-  push:
-    branches: [ "main" ]
-  # 2. Allow you to run this workflow manually from the Actions tab
+  workflow_run:
+    workflows: ["Continuous Integration"]
+    types:
+      - completed
+
   workflow_dispatch:
 
 jobs:
-  deploy-to-hf:
+  build:
     runs-on: ubuntu-latest
-    
-    # Optional: Add this to make sure it only deploys if the 'build' job
-    # in your CI file passed. This requires knowing your CI job name.
-    # needs: build # <-- Uncomment if you have a 'build' job in another file
-    
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.12' # Or your project's python version
-
-      # --- THIS IS THE FIX FOR YOUR 'hf-login' ERROR ---
-      - name: Install Dependencies (including HF Hub)
-        run: |
-          pip install huggingface_hub
-          # If your deploy step needs other packages, install them here too
-          # pip install -r requirements.txt 
-
-      - name: Run make deploy
+      - name: Deployment To Hugging Face
         env:
-          # Assumes your Hugging Face token is saved as a secret
-          # named 'HF_TOKEN' in your GitHub repo settings
-          HF: ${{ secrets.HF_TOKEN }} 
-        run: make deploy HF=$HF
+          HF: ${{ secrets.HF }}
+        run: make deploy HF=$HFs
