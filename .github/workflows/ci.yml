@@ -16,7 +16,7 @@ jobs:
       - name: Install system build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential python3-dev carg
+          sudo apt-get install -y build-essential python3-dev cargo
       - name: Install Packages
         run: make install
       - name: Format
