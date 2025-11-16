@@ -13,6 +13,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      # Adds git user config for Hugging Face push
+      - name: Configure git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -21,12 +27,12 @@ jobs:
       - name: Install Hugging Face Hub
         run: pip install huggingface_hub
 
-      # --- THIS IS THE FIX for 'hf-login' not found ---
+      # This is the fix for 'hf-login: No such file or directory'
       - name: Add pip install location to PATH
         run: echo "$HOME/.local/bin" >> $GITHUB_PATH
 
       - name: Deployment To Hugging Face
         env:
           HF: ${{ secrets.HF }}
-        # Fixed the $HFs typo here too
+        # Fixed the $HFs typo
         run: make deploy HF=$HF
