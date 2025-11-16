@@ -27,4 +27,4 @@ jobs:
         env:
           NAME: ${{ secrets.ADI }}
           EMAIL: ${{ secrets.ADI_MAIL }}
-        run: make update-branch USER_NAME=$NAME USER_EMAIL=$EMAIL
+        run: make update-branch ADI=$NAME ADI_MAIL=$EMAIL
