@@ -16,7 +16,6 @@ jobs:
       - uses: actions/checkout@v3
       - uses: iterative/setup-cml@v2
       
-      # Adds git user config for CML to commit
       - name: Configure git
         run: |
           git config --global user.name "github-actions[bot]"
@@ -27,31 +26,35 @@ jobs:
         with:
           python-version: '3.12'
 
+      # --- CACHE FIX ---
+      # I added '-v2' to the key to force a cache refresh.
       - name: Cache pip dependencies
         uses: actions/cache@v3
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          key: ${{ runner.os }}-pip-v2-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
 
+      # --- NINJA FIX ---
+      # I added 'ninja-build' to the apt-get install
       - name: Install system build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential python3-dev cargo
+          sudo apt-get install -y build-essential python3-dev cargo ninja-build
       
       - name: Upgrade pip, setuptools, and wheel
         run: |
           python -m pip install --upgrade pip setuptools wheel
 
-      # This step contains all the fixes for the pandas build error
+      # --- FINAL INSTALL STEP ---
+      # I removed 'ninja' from this pip command, as it's now installed by apt-get
       - name: Install Packages
         run: |
-          # 1. Install numpy<2.0 AND the build tools (mesonpy) first
-          pip install "numpy<2.0" mesonpy ninja
+          # 1. Install numpy<2.0 AND the build tool (mesonpy) first
+          pip install "numpy<2.0" mesonpy
           
-          # 2. Install the rest, using --no-build-isolation to force
-          #    pip to use the packages we just installed.
+          # 2. Install the rest of your requirements
           pip install --no-build-isolation -r requirements.txt
 
       - name: Format
