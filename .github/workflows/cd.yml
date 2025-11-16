@@ -1,39 +1,38 @@
 name: Continuous Deployment
-
-# This 'on' key controls when the deployment runs
 on:
-  # 1. Run when a 'push' happens to the 'main' branch
-  push:
-    branches: [ "main" ]
-  # 2. Allow you to run this workflow manually from the Actions tab
+  workflow_run:
+    workflows: ["Continuous Integration"]
+    types:
+      - completed
+
   workflow_dispatch:
 
 jobs:
-  deploy-to-hf:
+  build:
     runs-on: ubuntu-latest
-    
-    # Optional: Add this to make sure it only deploys if the 'build' job
-    # in your CI file passed. This requires knowing your CI job name.
-    # needs: build # <-- Uncomment if you have a 'build' job in another file
-    
     steps:
       - uses: actions/checkout@v3
+
+      # Adds git user config for Hugging Face push
+      - name: Configure git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.12' # Or your project's python version
+          python-version: '3.12'
 
-      # --- THIS IS THE FIX FOR YOUR 'hf-login' ERROR ---
-      - name: Install Dependencies (including HF Hub)
-        run: |
-          pip install huggingface_hub
-          # If your deploy step needs other packages, install them here too
-          # pip install -r requirements.txt 
+      - name: Install Hugging Face Hub
+        run: pip install huggingface_hub
 
-      - name: Run make deploy
+      # This is the fix for 'hf-login: No such file or directory'
+      - name: Add pip install location to PATH
+        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Deployment To Hugging Face
         env:
-          # Assumes your Hugging Face token is saved as a secret
-          # named 'HF_TOKEN' in your GitHub repo settings
-          HF: ${{ secrets.HF_TOKEN }} 
+          HF: ${{ secrets.HF }}
+        # Fixed the $HFs typo
         run: make deploy HF=$HF
