@@ -14,8 +14,10 @@ jobs:
       - uses: actions/checkout@v3
 
       # --- THIS IS THE FIX ---
-      # I have updated the action from v2 to v4
-      - uses: iterative/setup-cml@v4
+      # I have changed this back to v2, which exists.
+      # The 'env:' block is still here and is the correct
+      # fix for the API rate limit error.
+      - uses: iterative/setup-cml@v2
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
