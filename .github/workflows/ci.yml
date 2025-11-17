@@ -13,10 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      # --- THIS IS THE FIX ---
-      # I have changed this back to v2, which exists.
-      # The 'env:' block is still here and is the correct
-      # fix for the API rate limit error.
+      # This step is correct: v2 with the token
       - uses: iterative/setup-cml@v2
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -38,15 +35,24 @@ jobs:
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
-
+      
+      # We are keeping this step, as it's needed for C-extensions
       - name: Install system build dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential python3-dev cargo
 
+      # --- THIS IS THE FIX ---
       - name: Install Packages
         run: |
           pip install --upgrade pip
+          
+          # 1. Install numpy BY ITSELF first.
+          #    This will grab the pre-built wheel for Python 3.11
+          pip install numpy
+          
+          # 2. Now install the rest of your requirements.
+          #    pip will see numpy is already installed and skip it.
           pip install -r requirements.txt
 
       - name: Format
