@@ -14,20 +14,16 @@ jobs:
       - uses: actions/checkout@v3
       - uses: iterative/setup-cml@v2
       
-      # This is for your "Update Branch" step later
       - name: Configure git
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-      # --- THIS IS THE STEP YOU ASKED ABOUT ---
-      # It uses 3.11 to avoid the 'pandas' build errors
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11' 
+          python-version: '3.11' # We are keeping 3.11
 
-      # This makes future runs faster
       - name: Cache pip dependencies
         uses: actions/cache@v3
         with:
@@ -36,7 +32,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
 
-      # This replaces your 'make install' with a simple, working command
+      # --- THIS IS THE FIX ---
+      # We are adding the build tools back.
+      # This will fix the "Failed building wheel for numpy" error.
+      # I've added 'cargo' back as well, just in case pandas needs it.
+      - name: Install system build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential python3-dev cargo
+
       - name: Install Packages
         run: |
           pip install --upgrade pip
@@ -53,9 +57,8 @@ jobs:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: make eval
 
-      # Your step from the original file
       - name: Update Branch
         env:
-          NAME: ${{ secrets.USER_NAME }}
-          EMAIL: ${{ secrets.USER_EMAIL }}
-        run: make update-branch USER_NAME=$NAME USER_EMAIL=$EMAIL
+          NAME: ${{ secrets.ADI }}
+          EMAIL: ${{ secrets.ADI_MAIL }}
+        run: make update-branch ADI=$NAME ADI_MAIL=$EMAIL
