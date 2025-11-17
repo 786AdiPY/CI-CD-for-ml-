@@ -13,6 +13,30 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      # --- ADD ALL THESE STEPS ---
+
+      # 1. Configures Git user and fixes 'divergent branches' error
+      - name: Configure git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global pull.rebase false 
+
+      # 2. Installs Python (use 3.11 to match your new ci.yml)
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11' 
+
+      # 3. Installs the 'hf-login' command
+      - name: Install Hugging Face Hub
+        run: pip install huggingface_hub
+
+      # 4. Fixes the 'hf-login: not found' PATH error
+      - name: Add pip install location to PATH
+        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      # --- YOUR ORIGINAL STEP ---
       - name: Deployment To Hugging Face
         env:
           HF: ${{ secrets.HF }}
