@@ -12,8 +12,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
+      # --- THIS IS THE FIX ---
+      # We are adding the 'env:' block to this step
       - uses: iterative/setup-cml@v2
-      
+        env:
+          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Configure git
         run: |
           git config --global user.name "github-actions[bot]"
@@ -32,10 +37,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
 
-      # --- THIS IS THE FIX ---
-      # We are adding the build tools back.
-      # This will fix the "Failed building wheel for numpy" error.
-      # I've added 'cargo' back as well, just in case pandas needs it.
       - name: Install system build dependencies
         run: |
           sudo apt-get update
