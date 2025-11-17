@@ -5,7 +5,7 @@ on:
   pull_request:
     branches: [ "main" ]
   workflow_dispatch:
-  
+
 permissions: write-all
 jobs:
   build:
@@ -13,18 +13,49 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: iterative/setup-cml@v2
+      
+      # This is for your "Update Branch" step later
+      - name: Configure git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      # --- THIS IS THE STEP YOU ASKED ABOUT ---
+      # It uses 3.11 to avoid the 'pandas' build errors
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11' 
+
+      # This makes future runs faster
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      # This replaces your 'make install' with a simple, working command
       - name: Install Packages
-        run: make install
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
       - name: Format
         run: make format
+
       - name: Train
         run: make train
+
       - name: Evaluation
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: make eval
+
+      # Your step from the original file
       - name: Update Branch
         env:
-          NAME: ${{ secrets.ADI }}
-          EMAIL: ${{ secrets.ADI_MAIL }}
-        run: make update-branch ADI=$NAME ADI_MAIL=$EMAIL
+          NAME: ${{ secrets.USER_NAME }}
+          EMAIL: ${{ secrets.USER_EMAIL }}
+        run: make update-branch USER_NAME=$NAME USER_EMAIL=$EMAIL
