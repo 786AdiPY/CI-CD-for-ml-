@@ -8,14 +8,14 @@ eval:
 	cml comment create report.md
 		
 update-branch:
-	git config --global user.name $(USER_NAME)
-	git config --global user.email $(USER_EMAIL)
+	git config --global user.name $(ADI)
+	git config --global user.email $(ADI_MAIL)
 	git commit -am "Update with new results"
 	git push --force origin HEAD:update
 
 hf-login: 
 	pip install -U "huggingface_hub[cli]"
-	git pull origin update
+	git pull origin main --allow-unrelated-histories
 	git switch update
 	huggingface-cli login --token $(HF) --add-to-git-credential
 
