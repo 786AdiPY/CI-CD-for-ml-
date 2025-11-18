@@ -13,20 +13,22 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      # This step is correct: v2 with the token
+      # Fixes API rate limit
       - uses: iterative/setup-cml@v2
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      # Configures git for CML
       - name: Configure git
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
+      # Uses stable Python 3.11
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11' # We are keeping 3.11
+          python-version: '3.11' 
 
       - name: Cache pip dependencies
         uses: actions/cache@v3
@@ -36,24 +38,24 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
       
-      # We are keeping this step, as it's needed for C-extensions
+      # Installs C-compiler (still needed by pandas)
       - name: Install system build dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential python3-dev cargo
 
-      # --- THIS IS THE FIX ---
+      # --- THIS IS THE FINAL FIX ---
+      # This step forces pip to use the numpy from your
+      # requirements.txt file, instead of building an ancient one.
       - name: Install Packages
         run: |
           pip install --upgrade pip
           
-          # 1. Install numpy BY ITSELF first.
-          #    This will grab the pre-built wheel for Python 3.11
-          pip install numpy
-          
-          # 2. Now install the rest of your requirements.
-          #    pip will see numpy is already installed and skip it.
-          pip install -r requirements.txt
+          # This command tells pip:
+          # 1. Do NOT use a "build bubble" (--no-build-isolation)
+          # 2. Install everything from requirements.txt (which has
+          #    our pinned, compatible numpy==1.26.4)
+          pip install --no-build-isolation -r requirements.txt
 
       - name: Format
         run: make format
