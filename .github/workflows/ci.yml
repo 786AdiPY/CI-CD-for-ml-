@@ -50,10 +50,11 @@ jobs:
           pip install --upgrade pip
           pip install --no-build-isolation -r requirements.txt
 
-      # --- THIS STEP IS NOW REMOVED ---
-      # - name: Format
-      #   run: make format
+      # --- WE ARE KEEPING THE 'Format' STEP ---
+      - name: Format
+        run: make format
 
+      # --- WE ARE KEEPING THE 'Train' STEP ---
       - name: Train
         run: make train
 
