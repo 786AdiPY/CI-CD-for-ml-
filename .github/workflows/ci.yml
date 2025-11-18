@@ -38,27 +38,21 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
       
-      # Installs C-compiler (still needed by pandas)
+      # Installs C-compiler
       - name: Install system build dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential python3-dev cargo
 
-      # --- THIS IS THE FINAL FIX ---
-      # This step forces pip to use the numpy from your
-      # requirements.txt file, instead of building an ancient one.
+      # Installs our "pinned" requirements
       - name: Install Packages
         run: |
           pip install --upgrade pip
-          
-          # This command tells pip:
-          # 1. Do NOT use a "build bubble" (--no-build-isolation)
-          # 2. Install everything from requirements.txt (which has
-          #    our pinned, compatible numpy==1.26.4)
           pip install --no-build-isolation -r requirements.txt
 
-      - name: Format
-        run: make format
+      # --- THIS STEP IS NOW REMOVED ---
+      # - name: Format
+      #   run: make format
 
       - name: Train
         run: make train
