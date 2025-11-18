@@ -1,3 +1,23 @@
+
+.PHONY: install
+install:
+	pip install --upgrade pip
+	pip install --no-build-isolation -r requirements.txt
+
+
+.PHONY: format
+format:
+	@echo "--- Formatting code ---"
+	
+
+
+.PHONY: train
+train:
+	@echo "--- Training model ---"
+	
+
+
+
 eval:
 	echo "## Model Metrics" > report.md
 	cat ./Results/metrics.txt >> report.md
