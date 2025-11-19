@@ -4,11 +4,8 @@ from skops.io import get_untrusted_types
 
 # Get all untrusted types from the file
 # This is required for skops 0.10+ due to a security update
-untrusted_types = get_untrusted_types(file="../Model/drug_pipeline.skops")
-
-# Load the model, trusting all the types found *in this specific file*.
-# This is safe because you created this file yourself.
-pipe = sio.load("../Model/drug_pipeline.skops", trusted=untrusted_types)
+untrusted_types = get_untrusted_types(file="Model/drug_pipeline.skops")
+pipe = sio.load("Model/drug_pipeline.skops", trusted=untrusted_types)
 
 
 def predict_drug(age, sex, blood_pressure, cholesterol, na_to_k_ratio):
