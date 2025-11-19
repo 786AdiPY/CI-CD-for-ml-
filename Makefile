@@ -37,9 +37,9 @@ hf-login:
 
 
 push-hub:
-	huggingface-cli upload kingabzpro/Drug-Classification ./App --repo-type=space --commit-message="Sync App files"
-	huggingface-cli upload kingabzpro/Drug-Classification ./Model /Model --repo-type=space --commit-message="Sync Model"
-	huggingface-cli upload kingabzpro/Drug-Classification ./Results /Metrics --repo-type=space --commit-message="Sync Model"
+	python -c "from huggingface_hub import HfApi; HfApi().upload_folder(repo_id='kingabzpro/Drug-Classification', folder_path='./App', repo_type='space', commit_message='Sync App files')"
+	python -c "from huggingface_hub import HfApi; HfApi().upload_folder(repo_id='kingabzpro/Drug-Classification', folder_path='./Model', path_in_repo='/Model', repo_type='space', commit_message='Sync Model')"
+	python -c "from huggingface_hub import HfApi; HfApi().upload_folder(repo_id='kingabzpro/Drug-Classification', folder_path='./Results', path_in_repo='/Metrics', repo_type='space', commit_message='Sync Metrics')"
 
 deploy: hf-login push-hub
 
