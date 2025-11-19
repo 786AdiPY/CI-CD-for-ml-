@@ -32,8 +32,7 @@ hf-login:
 	pip install -U "huggingface_hub[cli]"
 	git fetch origin update
 	git checkout update
-	# FIX: Use 'python -m huggingface_hub.cli' instead of just 'huggingface-cli'
-	python -m huggingface_hub.cli login --token $(HF) --add-to-git-credentials
+	python -c "from huggingface_hub import login; login(token='$(HF)', add_to_git_credential=True)"
 
 
 
