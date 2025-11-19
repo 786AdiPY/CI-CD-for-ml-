@@ -37,9 +37,9 @@ hf-login:
 
 
 push-hub:
-	export HF_TOKEN=$(HF) && python -c "from huggingface_hub import HfApi; HfApi().upload_folder(repo_id='kingabzpro/Drug-Classification', folder_path='./App', repo_type='space', commit_message='Sync App files')"
-	export HF_TOKEN=$(HF) && python -c "from huggingface_hub import HfApi; HfApi().upload_folder(repo_id='kingabzpro/Drug-Classification', folder_path='./Model', path_in_repo='/Model', repo_type='space', commit_message='Sync Model')"
-	export HF_TOKEN=$(HF) && python -c "from huggingface_hub import HfApi; HfApi().upload_folder(repo_id='kingabzpro/Drug-Classification', folder_path='./Results', path_in_repo='/Metrics', repo_type='space', commit_message='Sync Metrics')"
+	export HF_TOKEN=$(HF) && python -c "from huggingface_hub import HfApi; HfApi().upload_folder(repo_id='adi0697/Drug-classification', folder_path='./App', repo_type='space', commit_message='Sync App files')"
+	export HF_TOKEN=$(HF) && python -c "from huggingface_hub import HfApi; HfApi().upload_folder(repo_id='adi0697/Drug-classification', folder_path='./Model', path_in_repo='/Model', repo_type='space', commit_message='Sync Model')"
+	export HF_TOKEN=$(HF) && python -c "from huggingface_hub import HfApi; HfApi().upload_folder(repo_id='adi0697/Drug-classification', folder_path='./Results', path_in_repo='/Metrics', repo_type='space', commit_message='Sync Metrics')"
 
 deploy: hf-login push-hub
 
