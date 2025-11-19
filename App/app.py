@@ -1,6 +1,6 @@
 import gradio as gr
 import skops.io as sio
-from skops.io import get_untrusted_types  
+from skops.io import get_untrusted_types
 
 # Get all untrusted types from the file
 # This is required for skops 0.10+ due to a security update
@@ -13,7 +13,7 @@ def predict_drug(age, sex, blood_pressure, cholesterol, na_to_k_ratio):
 
     Args:
         age (int): Age of patient
-        sex (str): Sex of patient 
+        sex (str): Sex of patient
         blood_pressure (str): Blood pressure level
         cholesterol (str): Cholesterol level
         na_to_k_ratio (float): Ratio of sodium to potassium in blood
